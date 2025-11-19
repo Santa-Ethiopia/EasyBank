@@ -70,32 +70,3 @@ CREATE TABLE agents (
     user_id BIGINT,
     FOREIGN KEY (user_id) REFERENCES users(user_id)
 );
-
--- Insert initial data
-INSERT INTO roles (user_role) VALUES 
-('ROLE_ADMIN'),
-('ROLE_CUSTOMER'),
-('ROLE_AGENT');
-
--- Insert admin user (password: admin123)
-INSERT INTO users (username, password, role_id, status) 
-VALUES ('admin', '$2a$10$8.UnVuG9HHgffUDAlk8qfOuVGkqRzgVymGe07xd00DMxs.AQubh4a', 1, 'ACTIVE');
-
--- Display created tables
-SHOW TABLES;
-
--- Verify data
-SELECT * FROM roles;
-SELECT * FROM users;
-
-
-
-
-What We'll Continue Tomorrow:
-Agent functionality and features
-
-Transaction history improvements
-
-Any additional features you'd like to add
-
-Testing and refinements
