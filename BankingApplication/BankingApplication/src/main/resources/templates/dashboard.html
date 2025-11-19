@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity6">
+<head>
+  <title>Dashboard - EasyBank Website</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+  <div class="container">
+    <a class="navbar-brand" href="#">EasyBank Website</a>
+    <div class="navbar-nav ms-auto">
+      <span class="navbar-text me-3" th:text="'Welcome, ' + ${#authentication.name}"></span>
+      <form th:action="@{/logout}" method="post">
+        <button type="submit" class="btn btn-outline-light btn-sm">Logout</button>
+      </form>
+    </div>
+  </div>
+</nav>
+
+<div class="container mt-4">
+  <div class="row">
+    <div class="col-md-3">
+      <div class="list-group">
+        <a th:href="@{/customer/dashboard}" class="list-group-item list-group-item-action"
+           sec:authorize="hasRole('CUSTOMER')">Customer Dashboard</a>
+        <a th:href="@{/customer/profile}" class="list-group-item list-group-item-action"
+           sec:authorize="hasRole('CUSTOMER')">My Profile</a>
+
+        <a th:href="@{/agent/dashboard}" class="list-group-item list-group-item-action"
+           sec:authorize="hasRole('AGENT')">Agent Dashboard</a>
+
+        <a th:href="@{/admin/dashboard}" class="list-group-item list-group-item-action"
+           sec:authorize="hasRole('ADMIN')">Admin Dashboard</a>
+        <a th:href="@{/admin/agents}" class="list-group-item list-group-item-action"
+           sec:authorize="hasRole('ADMIN')">Manage Agents</a>
+      </div>
+    </div>
+    <div class="col-md-9">
+      <div class="card">
+        <div class="card-body">
+          <h4>Dashboard</h4>
+          <p>Welcome to your banking dashboard. Use the menu to navigate to your specific role features.</p>
+
+          <div sec:authorize="hasRole('CUSTOMER')" class="alert alert-info">
+            <strong>Customer Access:</strong> You can view your accounts, make transfers, and update your profile.
+          </div>
+
+          <div sec:authorize="hasRole('AGENT')" class="alert alert-warning">
+            <strong>Agent Access:</strong> You can approve accounts, process transactions, and manage customer modifications.
+          </div>
+
+          <div sec:authorize="hasRole('ADMIN')" class="alert alert-success">
+            <strong>Admin Access:</strong> You can manage agents, deposit to agent balances, and oversee system operations.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

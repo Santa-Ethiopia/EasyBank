@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <title>My Profile - EasyBank Website</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+  <div class="container">
+    <a class="navbar-brand" href="#">EasyBank Website</a>
+    <div class="navbar-nav ms-auto">
+      <a th:href="@{/customer/dashboard}" class="btn btn-outline-light btn-sm me-2">Dashboard</a>
+      <a th:href="@{/dashboard}" class="btn btn-outline-light btn-sm me-2">Main Dashboard</a>
+      <form th:action="@{/logout}" method="post">
+        <button type="submit" class="btn btn-outline-light btn-sm">Logout</button>
+      </form>
+    </div>
+  </div>
+</nav>
+
+<div class="container mt-4">
+  <h2>My Profile</h2>
+
+
+
+  <!-- Display messages -->
+  <div th:if="${param.message}" class="alert alert-success">
+    <span th:text="${param.message}"></span>
+  </div>
+  <div th:if="${param.error}" class="alert alert-danger">
+    <span th:text="${param.error}"></span>
+  </div>
+
+  <!-- Account Information -->
+  <div class="card mt-3">
+    <div class="card-header">
+      <h5 class="mb-0">Account Information</h5>
+    </div>
+    <div class="card-body">
+      <div th:if="${account == null}" class="alert alert-info">
+        No account information available.
+      </div>
+      <form th:if="${account != null}" th:action="@{/customer/profile/update}" method="post">
+        <div class="row">
+          <div class="col-md-4">
+            <div class="mb-3">
+              <label class="form-label">First Name *</label>
+              <input type="text" class="form-control" name="firstName" th:value="${account.firstName}" required>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="mb-3">
+              <label class="form-label">Middle Name *</label>
+              <input type="text" class="form-control" name="middleName" th:value="${account.middleName}">
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="mb-3">
+              <label class="form-label">Last Name *</label>
+              <input type="text" class="form-control" name="lastName" th:value="${account.lastName}" required>
+            </div>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-md-6">
+            <div class="mb-3">
+              <label class="form-label">Mobile Number *</label>
+              <input type="tel" class="form-control" name="mobileNumber" th:value="${account.mobileNumber}" required>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="mb-3">
+              <label class="form-label">Email Address</label>
+              <input type="email" class="form-control" name="email" th:value="${account.email}">
+            </div>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-md-4">
+            <div class="mb-3">
+              <label class="form-label">City *</label>
+              <input type="text" class="form-control" name="city" th:value="${account.city}" required>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="mb-3">
+              <label class="form-label">Sub-City</label>
+              <input type="text" class="form-control" name="subCity" th:value="${account.subCity}">
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="mb-3">
+              <label class="form-label">Woreda</label>
+              <input type="text" class="form-control" name="woreda" th:value="${account.woreda}">
+            </div>
+          </div>
+        </div>
+
+        <div class="alert alert-warning">
+          <strong>Note:</strong> Any changes to your account information will require agent approval before taking effect.
+        </div>
+
+        <button type="submit" class="btn btn-primary">Request Profile Update</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Change Password -->
+  <div class="card mt-4">
+    <div class="card-header">
+      <h5 class="mb-0">Change Password</h5>
+    </div>
+    <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
+    <div th:if="${message}" class="alert alert-success" th:text="${message}"></div>
+    <div class="card-body">
+      <form th:action="@{/customer/change-password}" method="post">
+        <div class="row">
+          <div class="col-md-4">
+            <div class="mb-3">
+              <label class="form-label">Current Password</label>
+              <input type="password" class="form-control" name="currentPassword" required>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="mb-3">
+              <label class="form-label">New Password</label>
+              <input type="password" class="form-control" name="newPassword" required>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="mb-3">
+              <label class="form-label">Confirm New Password</label>
+              <input type="password" class="form-control" name="confirmPassword" required>
+            </div>
+          </div>
+        </div>
+        <button type="submit" class="btn btn-warning">Change Password</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modification Status -->
+  <div th:if="${account != null && account.modificationStatus.name() == 'PENDING'}" class="alert alert-info mt-3">
+    <strong>Update Pending:</strong> Your profile changes are pending agent approval.
+  </div>
+  <div th:if="${account != null && account.modificationStatus.name() == 'REJECTED'}" class="alert alert-warning mt-3">
+    <strong>Update Rejected:</strong> Your recent profile changes were rejected by the agent.
+  </div>
+</div>
+</body>
+</html>
