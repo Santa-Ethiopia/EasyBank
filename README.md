@@ -4,8 +4,8 @@ This project is not intended for production use as a secure financial platform, 
 
 
 Group Members:
- 	Sintayehu Tsegaye
- 	Rahel Getaneh
- 	Rodas Teshome
- 	Wibalem Amdemariam
- 	Yeshewa Berihun
+ 	Sintayehu Tsegaye;
+ 	Rahel Getaneh;
+ 	Rodas Teshome;
+ 	Wibalem Amdemariam;
+ 	Yeshewa Berihun;
