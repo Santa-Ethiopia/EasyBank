@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <title>My Profile - EasyBank</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <style>
+    :root {
+      --primary-gradient: linear-gradient(135deg, #0d6efd 0%, #0a58ca 100%);
+      --success-gradient: linear-gradient(135deg, #198754 0%, #146c43 100%);
+      --warning-gradient: linear-gradient(135deg, #ffc107 0%, #e0a800 100%);
+      --card-shadow: 0 4px 12px rgba(0,0,0,0.08);
+      --card-hover-shadow: 0 8px 24px rgba(0,0,0,0.12);
+    }
+
+    body {
+      background-color: #f8f9fa;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    .navbar-brand {
+      font-weight: 700;
+      font-size: 1.5rem;
+    }
+
+    .dashboard-header {
+      background: var(--primary-gradient);
+      color: white;
+      padding: 2rem 0;
+      margin-bottom: 2rem;
+      border-radius: 0 0 15px 15px;
+    }
+
+    .card {
+      border: none;
+      border-radius: 12px;
+      box-shadow: var(--card-shadow);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      margin-bottom: 1.5rem;
+    }
+
+    .card:hover {
+      transform: translateY(-5px);
+      box-shadow: var(--card-hover-shadow);
+    }
+
+    .card-header {
+      background: var(--primary-gradient);
+      color: white;
+      border-radius: 12px !important;
+      padding: 1rem 1.5rem;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .password-card .card-header {
+      background: var(--warning-gradient);
+    }
+
+    .card-toggle {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      width: 100%;
+      background: none;
+      border: none;
+      color: white;
+      text-align: left;
+      padding: 0;
+    }
+
+    .card-toggle:focus {
+      outline: none;
+      box-shadow: none;
+    }
+
+    .toggle-icon {
+      transition: transform 0.3s ease;
+    }
+
+    .toggle-icon.rotate {
+      transform: rotate(180deg);
+    }
+
+    .card-content {
+      transition: all 0.3s ease;
+      overflow: hidden;
+    }
+
+    .card-content.collapsed {
+      display: none;
+    }
+
+    .btn-gradient {
+      background: var(--primary-gradient);
+      border: none;
+      color: white;
+      font-weight: 500;
+      transition: all 0.3s ease;
+    }
+
+    .btn-gradient:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(13, 110, 253, 0.3);
+      color: white;
+    }
+
+    .btn-warning {
+      background: var(--warning-gradient);
+      border: none;
+      color: white;
+      font-weight: 500;
+      transition: all 0.3s ease;
+    }
+
+    .btn-warning:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(255, 193, 7, 0.3);
+      color: white;
+    }
+
+    .form-control {
+      border-radius: 8px;
+      border: 1px solid #dee2e6;
+      padding: 0.75rem;
+      transition: all 0.3s ease;
+    }
+
+    .form-control:focus {
+      box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.15);
+      border-color: #86b7fe;
+    }
+
+    .alert {
+      border-radius: 10px;
+      border: none;
+    }
+
+    .nav-btn {
+      border-radius: 20px;
+      padding: 0.5rem 1rem;
+      font-weight: 500;
+    }
+
+    .stats-icon {
+      font-size: 1.5rem;
+      margin-right: 10px;
+      opacity: 0.8;
+    }
+
+    .profile-section {
+      background: white;
+      border-radius: 12px;
+      padding: 2rem;
+      box-shadow: var(--card-shadow);
+      margin-bottom: 2rem;
+    }
+
+    .required-field::after {
+      content: " *";
+      color: #dc3545;
+    }
+
+    .info-note {
+      background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%);
+      border-left: 4px solid #ffc107;
+      border-radius: 8px;
+      padding: 1rem 1.5rem;
+      margin: 1.5rem 0;
+    }
+
+    .status-badge {
+      padding: 0.5em 1em;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      font-weight: 600;
+    }
+  </style>
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-dark" style="background: var(--primary-gradient);">
+  <div class="container">
+    <a class="navbar-brand" href="#">
+      <i class="fas fa-university me-2"></i>EasyBank
+    </a>
+    <div class="navbar-nav ms-auto">
+      <a th:href="@{/customer/dashboard}" class="btn btn-outline-light nav-btn me-2">
+        <i class="fas fa-tachometer-alt me-1"></i>Dashboard
+      </a>
+      <a th:href="@{/dashboard}" class="btn btn-outline-light nav-btn me-2">
+        <i class="fas fa-home me-1"></i>Main Dashboard
+      </a>
+      <form th:action="@{/logout}" method="post">
+        <button type="submit" class="btn btn-outline-light nav-btn">
+          <i class="fas fa-sign-out-alt me-1"></i>Logout
+        </button>
+      </form>
+    </div>
+  </div>
+</nav>
+
+<div class="dashboard-header">
+  <div class="container">
+    <div class="row align-items-center">
+      <div class="col-md-8">
+        <h1 class="display-5 fw-bold">My Profile</h1>
+        <p class="lead mb-0">Manage your personal information and security settings</p>
+      </div>
+      <div class="col-md-4 text-end">
+        <i class="fas fa-user-circle fa-3x opacity-75"></i>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="container mt-4">
+  <!-- Display messages -->
+  <div th:if="${param.message}" class="alert alert-success alert-dismissible fade show" role="alert">
+    <i class="fas fa-check-circle me-2"></i>
+    <span th:text="${param.message}"></span>
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+  </div>
+  <div th:if="${param.error}" class="alert alert-danger alert-dismissible fade show" role="alert">
+    <i class="fas fa-exclamation-circle me-2"></i>
+    <span th:text="${param.error}"></span>
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+  </div>
+
+  <!-- Modification Status -->
+  <div th:if="${account != null && account.modificationStatus.name() == 'PENDING'}" class="alert alert-info alert-dismissible fade show" role="alert">
+    <i class="fas fa-clock me-2"></i>
+    <strong>Update Pending:</strong> Your profile changes are pending agent approval.
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+  </div>
+  <div th:if="${account != null && account.modificationStatus.name() == 'REJECTED'}" class="alert alert-warning alert-dismissible fade show" role="alert">
+    <i class="fas fa-times-circle me-2"></i>
+    <strong>Update Rejected:</strong> Your recent profile changes were rejected by the agent.
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+  </div>
+
+  <!-- Account Information -->
+  <div class="card">
+    <div class="card-header">
+      <button class="card-toggle" id="accountInfoToggle">
+        <h5 class="mb-0"><i class="fas fa-user-edit stats-icon"></i>Account Information</h5>
+        <i class="fas fa-chevron-down toggle-icon" id="accountInfoIcon"></i>
+      </button>
+    </div>
+    <div class="card-content" id="accountInfoContent">
+      <div class="card-body">
+        <div th:if="${account == null}" class="alert alert-info text-center py-4">
+          <i class="fas fa-user-slash fa-2x mb-3 d-block"></i>
+          <h5>No Account Information</h5>
+          <p class="mb-0">No account information available at this time.</p>
+        </div>
+
+        <form th:if="${account != null}" th:action="@{/customer/profile/update}" method="post">
+          <div class="row">
+            <div class="col-md-4">
+              <div class="mb-3">
+                <label class="form-label required-field">First Name</label>
+                <div class="input-group">
+                  <span class="input-group-text"><i class="fas fa-user"></i></span>
+                  <input type="text" class="form-control" name="firstName" th:value="${account.firstName}" required>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="mb-3">
+                <label class="form-label required-field">Middle Name</label>
+                <div class="input-group">
+                  <span class="input-group-text"><i class="fas fa-user"></i></span>
+                  <input type="text" class="form-control" name="middleName" th:value="${account.middleName}">
+                </div>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="mb-3">
+                <label class="form-label required-field">Last Name</label>
+                <div class="input-group">
+                  <span class="input-group-text"><i class="fas fa-user"></i></span>
+                  <input type="text" class="form-control" name="lastName" th:value="${account.lastName}" required>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-md-6">
+              <div class="mb-3">
+                <label class="form-label required-field">Mobile Number</label>
+                <div class="input-group">
+                  <span class="input-group-text"><i class="fas fa-mobile-alt"></i></span>
+                  <input type="tel" class="form-control" name="mobileNumber" th:value="${account.mobileNumber}" required>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="mb-3">
+                <label class="form-label">Email Address</label>
+                <div class="input-group">
+                  <span class="input-group-text"><i class="fas fa-envelope"></i></span>
+                  <input type="email" class="form-control" name="email" th:value="${account.email}">
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-md-4">
+              <div class="mb-3">
+                <label class="form-label required-field">City</label>
+                <div class="input-group">
+                  <span class="input-group-text"><i class="fas fa-city"></i></span>
+                  <input type="text" class="form-control" name="city" th:value="${account.city}" required>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="mb-3">
+                <label class="form-label">Sub-City</label>
+                <div class="input-group">
+                  <span class="input-group-text"><i class="fas fa-map-marker-alt"></i></span>
+                  <input type="text" class="form-control" name="subCity" th:value="${account.subCity}">
+                </div>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="mb-3">
+                <label class="form-label">Woreda</label>
+                <div class="input-group">
+                  <span class="input-group-text"><i class="fas fa-location-arrow"></i></span>
+                  <input type="text" class="form-control" name="woreda" th:value="${account.woreda}">
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="info-note">
+            <div class="d-flex align-items-start">
+              <i class="fas fa-info-circle me-2 mt-1 text-warning"></i>
+              <div>
+                <strong>Note:</strong> Any changes to your account information will require agent approval before taking effect.
+              </div>
+            </div>
+          </div>
+
+          <div class="d-flex justify-content-end">
+            <button type="submit" class="btn btn-gradient px-4">
+              <i class="fas fa-paper-plane me-2"></i>Request Profile Update
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Change Password -->
+  <div class="card password-card">
+    <div class="card-header">
+      <button class="card-toggle" id="passwordToggle">
+        <h5 class="mb-0"><i class="fas fa-lock stats-icon"></i>Change Password</h5>
+        <i class="fas fa-chevron-down toggle-icon" id="passwordIcon"></i>
+      </button>
+    </div>
+    <div class="card-content collapsed" id="passwordContent">
+      <div class="card-body">
+        <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
+          <i class="fas fa-exclamation-triangle me-2"></i>
+          <span th:text="${error}"></span>
+          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        <div th:if="${message}" class="alert alert-success alert-dismissible fade show" role="alert">
+          <i class="fas fa-check-circle me-2"></i>
+          <span th:text="${message}"></span>
+          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+
+        <form th:action="@{/customer/change-password}" method="post">
+          <div class="row">
+            <div class="col-md-4">
+              <div class="mb-3">
+                <label class="form-label">Current Password</label>
+                <div class="input-group">
+                  <span class="input-group-text"><i class="fas fa-key"></i></span>
+                  <input type="password" class="form-control" name="currentPassword" required placeholder="Enter current password">
+                </div>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="mb-3">
+                <label class="form-label">New Password</label>
+                <div class="input-group">
+                  <span class="input-group-text"><i class="fas fa-lock"></i></span>
+                  <input type="password" class="form-control" name="newPassword" required placeholder="Enter new password">
+                </div>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="mb-3">
+                <label class="form-label">Confirm New Password</label>
+                <div class="input-group">
+                  <span class="input-group-text"><i class="fas fa-lock"></i></span>
+                  <input type="password" class="form-control" name="confirmPassword" required placeholder="Confirm new password">
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="d-flex justify-content-end">
+            <button type="submit" class="btn btn-warning px-4">
+              <i class="fas fa-sync-alt me-2"></i>Change Password
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // Account Information Toggle
+    const accountInfoToggle = document.getElementById('accountInfoToggle');
+    const accountInfoContent = document.getElementById('accountInfoContent');
+    const accountInfoIcon = document.getElementById('accountInfoIcon');
+
+    // Password Toggle
+    const passwordToggle = document.getElementById('passwordToggle');
+    const passwordContent = document.getElementById('passwordContent');
+    const passwordIcon = document.getElementById('passwordIcon');
+
+    // Toggle Account Information section
+    accountInfoToggle.addEventListener('click', function() {
+      accountInfoContent.classList.toggle('collapsed');
+      accountInfoIcon.classList.toggle('rotate');
+    });
+
+    // Toggle Password section
+    passwordToggle.addEventListener('click', function() {
+      passwordContent.classList.toggle('collapsed');
+      passwordIcon.classList.toggle('rotate');
+    });
+  });
+</script>
+</body>
+</html>

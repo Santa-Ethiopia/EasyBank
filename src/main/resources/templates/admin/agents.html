@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <title>Manage Agents - EasyBank</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <style>
+    :root {
+      --primary-gradient: linear-gradient(135deg, #0d6efd 0%, #0a58ca 100%);
+      --success-gradient: linear-gradient(135deg, #198754 0%, #146c43 100%);
+      --warning-gradient: linear-gradient(135deg, #ffc107 0%, #e0a800 100%);
+      --info-gradient: linear-gradient(135deg, #0dcaf0 0%, #0aa2c0 100%);
+      --danger-gradient: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+      --card-shadow: 0 4px 12px rgba(0,0,0,0.08);
+      --card-hover-shadow: 0 8px 24px rgba(0,0,0,0.12);
+    }
+
+    body {
+      background-color: #f8f9fa;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    .navbar-brand {
+      font-weight: 700;
+      font-size: 1.5rem;
+    }
+
+    .dashboard-header {
+      background: var(--primary-gradient);
+      color: white;
+      padding: 2rem 0;
+      margin-bottom: 2rem;
+      border-radius: 0 0 15px 15px;
+    }
+
+    .card {
+      border: none;
+      border-radius: 12px;
+      box-shadow: var(--card-shadow);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      margin-bottom: 1.5rem;
+    }
+
+    .card:hover {
+      transform: translateY(-5px);
+      box-shadow: var(--card-hover-shadow);
+    }
+
+    .card-header {
+      border-radius: 12px !important;
+      padding: 1rem 1.5rem;
+      font-weight: 600;
+      cursor: pointer;
+      background: var(--primary-gradient);
+      color: white;
+    }
+
+    .create-agent-card .card-header {
+      background: var(--success-gradient);
+    }
+
+    .agents-list-card .card-header {
+      background: var(--info-gradient);
+    }
+
+    .card-toggle {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      width: 100%;
+      background: none;
+      border: none;
+      color: inherit;
+      text-align: left;
+      padding: 0;
+    }
+
+    .card-toggle:focus {
+      outline: none;
+      box-shadow: none;
+    }
+
+    .toggle-icon {
+      transition: transform 0.3s ease;
+      color: inherit;
+    }
+
+    .toggle-icon.rotate {
+      transform: rotate(180deg);
+    }
+
+    .card-content {
+      transition: all 0.3s ease;
+      overflow: hidden;
+    }
+
+    .card-content.collapsed {
+      display: none;
+    }
+
+    .btn-gradient {
+      background: var(--primary-gradient);
+      border: none;
+      color: white;
+      font-weight: 500;
+      transition: all 0.3s ease;
+    }
+
+    .btn-gradient:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(13, 110, 253, 0.3);
+      color: white;
+    }
+
+    .btn-success {
+      background: var(--success-gradient);
+      border: none;
+      color: white;
+      font-weight: 500;
+      transition: all 0.3s ease;
+    }
+
+    .btn-success:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(25, 135, 84, 0.3);
+      color: white;
+    }
+
+    .btn-warning {
+      background: var(--warning-gradient);
+      border: none;
+      color: white;
+      font-weight: 500;
+      transition: all 0.3s ease;
+    }
+
+    .btn-warning:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(255, 193, 7, 0.3);
+      color: white;
+    }
+
+    .btn-danger {
+      background: var(--danger-gradient);
+      border: none;
+      color: white;
+      font-weight: 500;
+      transition: all 0.3s ease;
+    }
+
+    .btn-danger:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(220, 53, 69, 0.3);
+      color: white;
+    }
+
+    .form-control {
+      border-radius: 8px;
+      border: 1px solid #dee2e6;
+      padding: 0.75rem;
+      transition: all 0.3s ease;
+    }
+
+    .form-control:focus {
+      box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.15);
+      border-color: #86b7fe;
+    }
+
+    .alert {
+      border-radius: 10px;
+      border: none;
+    }
+
+    .nav-btn {
+      border-radius: 20px;
+      padding: 0.5rem 1rem;
+      font-weight: 500;
+    }
+
+    .stats-icon {
+      font-size: 1.5rem;
+      margin-right: 10px;
+      opacity: 0.8;
+    }
+
+    .table {
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    .table thead th {
+      background: var(--primary-gradient);
+      color: white;
+      border: none;
+      padding: 1rem;
+      font-weight: 600;
+    }
+
+    .table tbody td {
+      padding: 1rem;
+      vertical-align: middle;
+    }
+
+    .table tbody tr {
+      transition: background-color 0.2s ease;
+    }
+
+    .table tbody tr:hover {
+      background-color: rgba(13, 110, 253, 0.05);
+    }
+
+    .badge-status {
+      padding: 0.5em 0.8em;
+      border-radius: 20px;
+      font-size: 0.75rem;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 3rem 1rem;
+    }
+
+    .empty-state-icon {
+      font-size: 4rem;
+      color: #6c757d;
+      margin-bottom: 1rem;
+      opacity: 0.5;
+    }
+
+    .input-group-sm .form-control {
+      border-radius: 6px;
+    }
+  </style>
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-dark" style="background: var(--primary-gradient);">
+  <div class="container">
+    <a class="navbar-brand" href="#">
+      <i class="fas fa-university me-2"></i>EasyBank
+    </a>
+    <div class="navbar-nav ms-auto">
+      <a th:href="@{/admin/dashboard}" class="btn btn-outline-light nav-btn me-2">
+        <i class="fas fa-tachometer-alt me-1"></i>Admin Dashboard
+      </a>
+      <a th:href="@{/dashboard}" class="btn btn-outline-light nav-btn me-2">
+        <i class="fas fa-home me-1"></i>Main Dashboard
+      </a>
+      <form th:action="@{/logout}" method="post">
+        <button type="submit" class="btn btn-outline-light nav-btn">
+          <i class="fas fa-sign-out-alt me-1"></i>Logout
+        </button>
+      </form>
+    </div>
+  </div>
+</nav>
+
+<div class="dashboard-header">
+  <div class="container">
+    <div class="row align-items-center">
+      <div class="col-md-8">
+        <h1 class="display-5 fw-bold">Manage Agents</h1>
+        <p class="lead mb-0">Create and manage banking agents</p>
+      </div>
+      <div class="col-md-4 text-end">
+        <i class="fas fa-user-tie fa-3x opacity-75"></i>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="container mt-4">
+  <!-- Display messages -->
+  <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
+    <i class="fas fa-exclamation-circle me-2"></i>
+    <span th:text="${error}"></span>
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+  </div>
+  <div th:if="${message}" class="alert alert-success alert-dismissible fade show" role="alert">
+    <i class="fas fa-check-circle me-2"></i>
+    <span th:text="${message}"></span>
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+  </div>
+
+  <!-- Create Agent Form -->
+  <div class="card create-agent-card">
+    <div class="card-header">
+      <button class="card-toggle" id="createAgentToggle">
+        <h5 class="mb-0"><i class="fas fa-plus-circle stats-icon"></i>Create New Agent</h5>
+        <i class="fas fa-chevron-down toggle-icon" id="createAgentIcon"></i>
+      </button>
+    </div>
+    <div class="card-content" id="createAgentContent">
+      <div class="card-body">
+        <form th:action="@{/admin/agents}" th:object="${agentRequest}" method="post">
+          <!-- Global form errors -->
+          <div th:if="${#fields.hasErrors('*')}" class="alert alert-danger">
+            <i class="fas fa-exclamation-triangle me-2"></i>
+            <div th:each="err : ${#fields.errors('*')}" th:text="${err}"></div>
+          </div>
+
+          <div class="row">
+            <div class="col-md-4">
+              <div class="mb-3">
+                <label class="form-label fw-semibold">Branch Name</label>
+                <div class="input-group">
+                  <span class="input-group-text"><i class="fas fa-building"></i></span>
+                  <input type="text" class="form-control" th:field="*{branchName}" required placeholder="Enter branch name">
+                </div>
+                <div th:if="${#fields.hasErrors('branchName')}" class="text-danger small mt-1" th:errors="*{branchName}"></div>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="mb-3">
+                <label class="form-label fw-semibold">Business Name</label>
+                <div class="input-group">
+                  <span class="input-group-text"><i class="fas fa-briefcase"></i></span>
+                  <input type="text" class="form-control" th:field="*{businessName}" required placeholder="Enter business name">
+                </div>
+                <div th:if="${#fields.hasErrors('businessName')}" class="text-danger small mt-1" th:errors="*{businessName}"></div>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="mb-3">
+                <label class="form-label fw-semibold">TIN</label>
+                <div class="input-group">
+                  <span class="input-group-text"><i class="fas fa-id-card"></i></span>
+                  <input type="text" class="form-control" th:field="*{tin}" required placeholder="Enter TIN number">
+                </div>
+                <div th:if="${#fields.hasErrors('tin')}" class="text-danger small mt-1" th:errors="*{tin}"></div>
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-6">
+              <div class="mb-3">
+                <label class="form-label fw-semibold">Username</label>
+                <div class="input-group">
+                  <span class="input-group-text"><i class="fas fa-user"></i></span>
+                  <input type="text" class="form-control" th:field="*{username}" required placeholder="Enter username">
+                </div>
+                <div th:if="${#fields.hasErrors('username')}" class="text-danger small mt-1" th:errors="*{username}"></div>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="mb-3">
+                <label class="form-label fw-semibold">Password</label>
+                <div class="input-group">
+                  <span class="input-group-text"><i class="fas fa-lock"></i></span>
+                  <input type="password" class="form-control" th:field="*{password}" required placeholder="Enter password">
+                </div>
+                <div th:if="${#fields.hasErrors('password')}" class="text-danger small mt-1" th:errors="*{password}"></div>
+              </div>
+            </div>
+          </div>
+          <div class="d-flex justify-content-end">
+            <button type="submit" class="btn btn-success px-4">
+              <i class="fas fa-user-plus me-2"></i>Create Agent
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Agents List -->
+  <div class="card agents-list-card">
+    <div class="card-header">
+      <button class="card-toggle" id="agentsListToggle">
+        <h5 class="mb-0"><i class="fas fa-list stats-icon"></i>Agents List</h5>
+        <i class="fas fa-chevron-down toggle-icon" id="agentsListIcon"></i>
+      </button>
+    </div>
+    <div class="card-content" id="agentsListContent">
+      <div class="card-body">
+        <div th:if="${agents.empty}" class="empty-state">
+          <i class="fas fa-user-tie empty-state-icon"></i>
+          <h4 class="text-muted">No Agents Found</h4>
+          <p class="text-muted mb-0">Create your first agent to get started.</p>
+        </div>
+
+        <div th:if="${!agents.empty}" class="table-responsive">
+          <table class="table table-hover">
+            <thead>
+            <tr>
+              <th><i class="fas fa-briefcase me-1"></i>Business Name</th>
+              <th><i class="fas fa-building me-1"></i>Branch</th>
+              <th><i class="fas fa-id-card me-1"></i>TIN</th>
+              <th><i class="fas fa-wallet me-1"></i>Balance</th>
+              <th><i class="fas fa-circle me-1"></i>Status</th>
+              <th><i class="fas fa-cogs me-1"></i>Actions</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="agent : ${agents}">
+              <td class="fw-semibold" th:text="${agent.businessName}"></td>
+              <td th:text="${agent.branchName}"></td>
+              <td th:text="${agent.tin}"></td>
+              <td class="fw-bold text-success" th:text="${'$' + agent.agentBalance}"></td>
+              <td>
+                <span th:if="${agent.status.name() == 'ACTIVE'}" class="badge-status bg-success">
+                  <i class="fas fa-check-circle me-1"></i>Active
+                </span>
+                <span th:if="${agent.status.name() == 'INACTIVE'}" class="badge-status bg-danger">
+                  <i class="fas fa-times-circle me-1"></i>Inactive
+                </span>
+              </td>
+              <td>
+                <div class="d-flex flex-wrap gap-2">
+                  <!-- Deposit Form -->
+                  <form th:action="@{/admin/agents/{agentId}/deposit(agentId=${agent.agentId})}" method="post" class="d-inline">
+                    <div class="input-group input-group-sm">
+                      <span class="input-group-text"><i class="fas fa-dollar-sign"></i></span>
+                      <input type="number" step="0.01" name="amount" class="form-control" placeholder="Amount" style="width: 100px;" required>
+                      <button type="submit" class="btn btn-success btn-sm">
+                        <i class="fas fa-arrow-down"></i>
+                      </button>
+                    </div>
+                  </form>
+
+                  <!-- Activate/Deactivate -->
+                  <form th:action="@{/admin/agents/{agentId}/deactivate(agentId=${agent.agentId})}" method="post" class="d-inline" th:if="${agent.status.name() == 'ACTIVE'}">
+                    <button type="submit" class="btn btn-warning btn-sm">
+                      <i class="fas fa-pause me-1"></i>Deactivate
+                    </button>
+                  </form>
+                  <form th:action="@{/admin/agents/{agentId}/activate(agentId=${agent.agentId})}" method="post" class="d-inline" th:if="${agent.status.name() == 'INACTIVE'}">
+                    <button type="submit" class="btn btn-success btn-sm">
+                      <i class="fas fa-play me-1"></i>Activate
+                    </button>
+                  </form>
+                </div>
+              </td>
+            </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // Create Agent Toggle
+    const createAgentToggle = document.getElementById('createAgentToggle');
+    const createAgentContent = document.getElementById('createAgentContent');
+    const createAgentIcon = document.getElementById('createAgentIcon');
+
+    // Agents List Toggle
+    const agentsListToggle = document.getElementById('agentsListToggle');
+    const agentsListContent = document.getElementById('agentsListContent');
+    const agentsListIcon = document.getElementById('agentsListIcon');
+
+    // Toggle Create Agent section
+    createAgentToggle.addEventListener('click', function() {
+      createAgentContent.classList.toggle('collapsed');
+      createAgentIcon.classList.toggle('rotate');
+    });
+
+    // Toggle Agents List section
+    agentsListToggle.addEventListener('click', function() {
+      agentsListContent.classList.toggle('collapsed');
+      agentsListIcon.classList.toggle('rotate');
+    });
+  });
+</script>
+</body>
+</html>

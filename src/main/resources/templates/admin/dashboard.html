@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <title>Admin Dashboard - EasyBank</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <style>
+    :root {
+      --primary-gradient: linear-gradient(135deg, #0d6efd 0%, #0a58ca 100%);
+      --success-gradient: linear-gradient(135deg, #198754 0%, #146c43 100%);
+      --warning-gradient: linear-gradient(135deg, #ffc107 0%, #e0a800 100%);
+      --info-gradient: linear-gradient(135deg, #0dcaf0 0%, #0aa2c0 100%);
+      --danger-gradient: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+      --card-shadow: 0 4px 12px rgba(0,0,0,0.08);
+      --card-hover-shadow: 0 8px 24px rgba(0,0,0,0.12);
+    }
+
+    body {
+      background-color: #f8f9fa;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    .navbar-brand {
+      font-weight: 700;
+      font-size: 1.5rem;
+    }
+
+    .dashboard-header {
+      background: var(--primary-gradient);
+      color: white;
+      padding: 2rem 0;
+      margin-bottom: 2rem;
+      border-radius: 0 0 15px 15px;
+    }
+
+    .card {
+      border: none;
+      border-radius: 12px;
+      box-shadow: var(--card-shadow);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      margin-bottom: 1.5rem;
+    }
+
+    .card:hover {
+      transform: translateY(-5px);
+      box-shadow: var(--card-hover-shadow);
+    }
+
+    .card-header {
+      border-radius: 12px !important;
+      padding: 1rem 1.5rem;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .agents-card .card-header {
+      background: var(--primary-gradient);
+      color: white;
+    }
+
+    .customers-card .card-header {
+      background: var(--success-gradient);
+      color: white;
+    }
+
+    .card-toggle {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      width: 100%;
+      background: none;
+      border: none;
+      color: inherit;
+      text-align: left;
+      padding: 0;
+    }
+
+    .card-toggle:focus {
+      outline: none;
+      box-shadow: none;
+    }
+
+    .toggle-icon {
+      transition: transform 0.3s ease;
+      color: inherit;
+    }
+
+    .toggle-icon.rotate {
+      transform: rotate(180deg);
+    }
+
+    .card-content {
+      transition: all 0.3s ease;
+      overflow: hidden;
+    }
+
+    .card-content.collapsed {
+      display: none;
+    }
+
+    .btn-gradient {
+      background: var(--primary-gradient);
+      border: none;
+      color: white;
+      font-weight: 500;
+      transition: all 0.3s ease;
+    }
+
+    .btn-gradient:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(13, 110, 253, 0.3);
+      color: white;
+    }
+
+    .btn-success {
+      background: var(--success-gradient);
+      border: none;
+      color: white;
+      font-weight: 500;
+      transition: all 0.3s ease;
+    }
+
+    .btn-success:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(25, 135, 84, 0.3);
+      color: white;
+    }
+
+    .btn-warning {
+      background: var(--warning-gradient);
+      border: none;
+      color: white;
+      font-weight: 500;
+      transition: all 0.3s ease;
+    }
+
+    .btn-warning:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(255, 193, 7, 0.3);
+      color: white;
+    }
+
+    .alert {
+      border-radius: 10px;
+      border: none;
+    }
+
+    .nav-btn {
+      border-radius: 20px;
+      padding: 0.5rem 1rem;
+      font-weight: 500;
+    }
+
+    .stats-icon {
+      font-size: 1.5rem;
+      margin-right: 10px;
+      opacity: 0.8;
+    }
+
+    .stat-number {
+      font-size: 2rem;
+      font-weight: 700;
+      color: #0d6efd;
+      margin-bottom: 0.5rem;
+    }
+
+    .customer-item {
+      border-left: 3px solid #198754;
+      transition: all 0.3s ease;
+      padding: 0.75rem;
+      margin-bottom: 0.5rem;
+      border-radius: 8px;
+      background: white;
+    }
+
+    .customer-item:hover {
+      border-left-color: #0a58ca;
+      background-color: #f8f9fa;
+    }
+
+    .badge-status {
+      padding: 0.4em 0.8em;
+      border-radius: 20px;
+      font-size: 0.7rem;
+      font-weight: 600;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 2rem 1rem;
+    }
+
+    .empty-state-icon {
+      font-size: 3rem;
+      color: #6c757d;
+      margin-bottom: 1rem;
+      opacity: 0.5;
+    }
+  </style>
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-dark" style="background: var(--primary-gradient);">
+  <div class="container">
+    <a class="navbar-brand" href="#">
+      <i class="fas fa-university me-2"></i>EasyBank
+    </a>
+    <div class="navbar-nav ms-auto">
+      <a th:href="@{/dashboard}" class="btn btn-outline-light nav-btn me-2">
+        <i class="fas fa-home me-1"></i>Main Dashboard
+      </a>
+      <form th:action="@{/logout}" method="post">
+        <button type="submit" class="btn btn-outline-light nav-btn">
+          <i class="fas fa-sign-out-alt me-1"></i>Logout
+        </button>
+      </form>
+    </div>
+  </div>
+</nav>
+
+<div class="dashboard-header">
+  <div class="container">
+    <div class="row align-items-center">
+      <div class="col-md-8">
+        <h1 class="display-5 fw-bold">Admin Dashboard</h1>
+        <p class="lead mb-0">System administration and user management</p>
+      </div>
+      <div class="col-md-4 text-end">
+        <i class="fas fa-user-shield fa-3x opacity-75"></i>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="container mt-4">
+  <div class="row">
+    <!-- Agents Summary -->
+    <div class="col-md-6">
+      <div class="card agents-card">
+        <div class="card-header">
+          <button class="card-toggle" id="agentsToggle">
+            <h5 class="mb-0"><i class="fas fa-user-tie stats-icon"></i>Agents Management</h5>
+            <i class="fas fa-chevron-down toggle-icon" id="agentsIcon"></i>
+          </button>
+        </div>
+        <div class="card-content" id="agentsContent">
+          <div class="card-body">
+            <div class="text-center mb-4">
+              <div class="stat-number" th:text="${agents.size()}">0</div>
+              <p class="text-muted mb-3">Total Agents</p>
+            </div>
+            <div class="d-grid">
+              <a th:href="@{/admin/agents}" class="btn btn-gradient">
+                <i class="fas fa-cogs me-2"></i>Manage Agents
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Customers Summary -->
+    <div class="col-md-6">
+      <div class="card customers-card">
+        <div class="card-header">
+          <button class="card-toggle" id="customersToggle">
+            <h5 class="mb-0"><i class="fas fa-users stats-icon"></i>Customers Management</h5>
+            <i class="fas fa-chevron-down toggle-icon" id="customersIcon"></i>
+          </button>
+        </div>
+        <div class="card-content" id="customersContent">
+          <div class="card-body">
+            <div class="text-center mb-4">
+              <div class="stat-number" th:text="${customers.size()}">0</div>
+              <p class="text-muted mb-3">Total Customers</p>
+            </div>
+
+            <div th:if="${customers.empty}" class="empty-state">
+              <i class="fas fa-user-slash empty-state-icon"></i>
+              <p class="text-muted mb-0">No customers found</p>
+            </div>
+
+            <div th:if="${!customers.empty}" class="customer-list">
+              <div th:each="customer : ${customers}" class="customer-item">
+                <div class="d-flex justify-content-between align-items-center">
+                  <div class="d-flex align-items-center">
+                    <i class="fas fa-user-circle me-2 text-muted"></i>
+                    <div>
+                      <div class="fw-semibold" th:text="${customer.username}"></div>
+                      <div>
+                        <span th:if="${customer.status.name() == 'ACTIVE'}" class="badge-status bg-success">
+                          <i class="fas fa-check-circle me-1"></i>Active
+                        </span>
+                        <span th:if="${customer.status.name() == 'INACTIVE'}" class="badge-status bg-danger">
+                          <i class="fas fa-times-circle me-1"></i>Inactive
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="btn-group btn-group-sm">
+                    <form th:action="@{/admin/customers/{userId}/deactivate(userId=${customer.userId})}" method="post" class="d-inline">
+                      <button type="submit" class="btn btn-warning btn-sm" th:if="${customer.status.name() == 'ACTIVE'}">
+                        <i class="fas fa-pause me-1"></i>Deactivate
+                      </button>
+                    </form>
+                    <form th:action="@{/admin/customers/{userId}/activate(userId=${customer.userId})}" method="post" class="d-inline">
+                      <button type="submit" class="btn btn-success btn-sm" th:if="${customer.status.name() == 'INACTIVE'}">
+                        <i class="fas fa-play me-1"></i>Activate
+                      </button>
+                    </form>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // Agents Toggle
+    const agentsToggle = document.getElementById('agentsToggle');
+    const agentsContent = document.getElementById('agentsContent');
+    const agentsIcon = document.getElementById('agentsIcon');
+
+    // Customers Toggle
+    const customersToggle = document.getElementById('customersToggle');
+    const customersContent = document.getElementById('customersContent');
+    const customersIcon = document.getElementById('customersIcon');
+
+    // Toggle Agents section
+    agentsToggle.addEventListener('click', function() {
+      agentsContent.classList.toggle('collapsed');
+      agentsIcon.classList.toggle('rotate');
+    });
+
+    // Toggle Customers section
+    customersToggle.addEventListener('click', function() {
+      customersContent.classList.toggle('collapsed');
+      customersIcon.classList.toggle('rotate');
+    });
+  });
+</script>
+</body>
+</html>
